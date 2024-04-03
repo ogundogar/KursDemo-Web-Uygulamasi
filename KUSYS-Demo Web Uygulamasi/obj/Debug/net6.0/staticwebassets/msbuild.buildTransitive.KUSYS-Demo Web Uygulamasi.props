@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\buildMultiTargeting\KUSYS-Demo Web Uygulamasi.props" />
+</Project>
