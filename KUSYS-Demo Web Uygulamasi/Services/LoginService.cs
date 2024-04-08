@@ -31,7 +31,7 @@ namespace KUSYS_Demo_Web_Uygulamasi.Services
             SignInResult result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
             if (result == SignInResult.Success)
             {
-                TokenDTO token=_tokenHandler.CreateAccessToken(60);
+                TokenDTO token=_tokenHandler.CreateAccessToken(60,user);
                 return token;
             }
             throw new Exception("Hatalı Kullanıcı Adı veya Şifre... ");

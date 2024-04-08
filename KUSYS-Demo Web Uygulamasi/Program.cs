@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
+using KUSYS_Demo_Web_Uygulamasi.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,8 +20,11 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<CourseDbContext>(options => options.UseSqlServer(builder.Configuration["ConnectionStrings:DefaultConnection"]));
 builder.Services.AddScoped<IRepositoryCourse, RepositoryCourse>();
 builder.Services.AddScoped<IRepositoryAppUsers, RepositoryAppUsers>();
+builder.Services.AddScoped<IRepositoryRole, RepositoryRole>();
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<ITokenHandler, KUSYS_Demo_Web_Uygulamasi.Services.TokenHandler>();
+builder.Services.AddScoped<IAuthorizeService, AuthorizeService>();
+builder.Services.AddScoped<IRepositoryAuthorityLevel, RepositoryAuthorityLevel>();
 builder.Services.AddSwaggerDocument();
 
     builder.Services.AddIdentity<AppUser, AppRole>(options =>
@@ -30,6 +35,11 @@ builder.Services.AddSwaggerDocument();
         options.Password.RequireLowercase = false;
         options.Password.RequireUppercase = false;
     }).AddEntityFrameworkStores<CourseDbContext>();
+
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<RolePermissionFilter>();
+});
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer("Admin", options =>
 {
@@ -42,7 +52,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidAudience = builder.Configuration["Token:Audience"],
         ValidIssuer = builder.Configuration["Token:Issuer"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Token:SecurityKey"])),
-        LifetimeValidator = (notBefore, expires, securityToken, validationParameters) => expires != null ? expires > DateTime.UtcNow : false
+        LifetimeValidator = (notBefore, expires, securityToken, validationParameters) => expires != null ? expires > DateTime.UtcNow : false,
+        NameClaimType = ClaimTypes.Name
     };
 });
 

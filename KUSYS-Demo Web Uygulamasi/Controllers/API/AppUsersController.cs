@@ -1,4 +1,8 @@
-﻿using KUSYS_Demo_Web_Uygulamasi.Repository.IRepository;
+﻿using KUSYS_Demo_Web_Uygulamasi.Consts;
+using KUSYS_Demo_Web_Uygulamasi.CustomAttributes;
+using KUSYS_Demo_Web_Uygulamasi.Enums;
+using KUSYS_Demo_Web_Uygulamasi.Repository.IRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,6 +10,7 @@ namespace KUSYS_Demo_Web_Uygulamasi.Controllers.API
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = "Admin")]
     public class AppUsersController : ControllerBase
     {
         readonly IRepositoryAppUsers _repository;
@@ -14,6 +19,7 @@ namespace KUSYS_Demo_Web_Uygulamasi.Controllers.API
             _repository = repository;
         }
         [HttpGet]
+        [AuthorizeCostum(AuthorityLevel = AuthorityLevel.Madde3 )]
         public async Task<IActionResult> Get()
         {
             var result = await _repository.Get().ToListAsync();
@@ -42,6 +48,26 @@ namespace KUSYS_Demo_Web_Uygulamasi.Controllers.API
         public async Task<IActionResult> Delete(int Id)
         {
             bool result = await _repository.Remove(Id);
+            return Ok(result);
+        }
+        [HttpGet("AppUserCourse")]
+        public async Task<IActionResult> GetAppUserCourse()
+        {
+            var result =await _repository.GetAppUserCourse();
+            return Ok(result);
+        }
+
+        [HttpGet("AppUserAppRole")]
+        public async Task<IActionResult> Get(string UserName)
+        {
+            var result = await _repository.GetAppUserAppRole(UserName);
+            return Ok(result);
+        }
+
+        [HttpPost("AppUserAppRole")]
+        public async Task<IActionResult> Post(string UserId,string[] RolesName)
+        {
+            var result = await _repository.AddAppUserAppRole(UserId, RolesName);
             return Ok(result);
         }
     }

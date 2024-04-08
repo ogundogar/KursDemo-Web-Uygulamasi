@@ -18,7 +18,6 @@ namespace KUSYS_Demo_Web_Uygulamasi.Controllers
 
         public async Task<IActionResult> Index()
         {
-            TokenDTO token = await _loginService.Login("deneme@deneme.com", "12345");
             return View();
         }
     }

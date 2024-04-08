@@ -4,6 +4,9 @@ using static System.Net.Mime.MediaTypeNames;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
 using System.Text;
+using System.Security.Claims;
+using KUSYS_Demo_Web_Uygulamasi.Models.Entities.Identity;
+using KUSYS_Demo_Web_Uygulamasi.DTOs;
 
 namespace KUSYS_Demo_Web_Uygulamasi.Services
 {
@@ -16,9 +19,9 @@ namespace KUSYS_Demo_Web_Uygulamasi.Services
             _configuration = configuration;
         }
 
-        public DTOs.TokenDTO CreateAccessToken(int second)
+        public TokenDTO CreateAccessToken(int second,AppUser appUser)
         {
-            DTOs.TokenDTO token = new();
+            TokenDTO token = new();
 
             SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(_configuration["Token:SecurityKey"]));
 
@@ -30,7 +33,8 @@ namespace KUSYS_Demo_Web_Uygulamasi.Services
                 issuer: _configuration["Token:Issuer"],
                 expires: token.Expiration,
                 notBefore: DateTime.UtcNow,
-                signingCredentials: siginigCredentials
+                signingCredentials: siginigCredentials,
+                claims:new List<Claim> { new(ClaimTypes.Name,appUser.UserName)}
                 );
             JwtSecurityTokenHandler tokenHandler = new();
             token.AccessToken = tokenHandler.WriteToken(securityToken);

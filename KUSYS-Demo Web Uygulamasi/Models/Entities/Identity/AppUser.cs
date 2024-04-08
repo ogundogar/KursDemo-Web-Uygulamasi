@@ -8,6 +8,6 @@ namespace KUSYS_Demo_Web_Uygulamasi.Models.Entities.Identity
         public string Surname { get; set; }
         public DateTime BirthDate { get; set; }
         public string Role { get; set; }
-        public ICollection<Course> aCourse { get; set; }
+        public ICollection<TbCourse> Course { get; set; }
     }
 }
